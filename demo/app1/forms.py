@@ -89,24 +89,65 @@ class LoginForm(forms.Form):
     )
     
     
-# class ChangepassForm(forms.Form):
-#     password1=forms.CharField(
-#         widget=forms.PasswordInput(
-#             attrs={
-#                 "class":"form-control"
-#             }
-            
-#         )
-#     )
-    
-#     password2=forms.CharField(
-#         widget=forms.PasswordInput(
-#             attrs={
-#                 "class":"form-control"
-#             }
-            
-#         )
-#     )
+class ChangepassForm(forms.Form):
+ 
+        
+        password1=forms.CharField(
+            widget=forms.PasswordInput(
+                attrs={
+                    "class":"form-control"
+                }
+                
+            )
+        )
+        
+        password2=forms.CharField(
+            widget=forms.PasswordInput(
+                attrs={
+                    "class":"form-control"
+                }
+                
+            )
+        )
 
+
+
+
+# class forgetpass(forms.Form):
+#     email = forms.EmailField(max_length=60)
+
+
+# class forgetpass1(forms.Form):
     
+#     password =  forms.CharField(widget=forms.PasswordInput())
+#     confirmpassword= forms.CharField(widget=forms.PasswordInput())
+
+
+class forgetpass(forms.Form):
+   
+    email = forms.EmailField()
+
+class Reset(forms.Form):
+    new_password = forms.CharField(widget=forms.PasswordInput())
+    reenter_password = forms.CharField(widget=forms.PasswordInput())
     
+    def clean(self):
+        
+        cleaned_data = super().clean()
+        
+        np = cleaned_data.get('new_password')
+        rep = cleaned_data.get('reenter_password')
+
+
+        if np is None:
+            self.add_error("new_password", "enter valid new password")
+        if rep is None:
+            self.add_error("reenter_password", "type reenter password")
+        if np is  not None and rep is not None and rep is not None:
+            if len(np) < 8:
+                self.add_error('new_password','new_password is too short')
+        
+            
+            if rep!=np:
+                self.add_error("reenter_password","mismatch")
+        return cleaned_data
