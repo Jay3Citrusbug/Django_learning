@@ -9,11 +9,13 @@ urlpatterns = [
     path("signup/",views.sign_up,name="signup"),
     path("",views.sign_in,name='login'),
     path("home/",views.home,name="home"),
+    path("logout/",views.logout,name="logout"),
+
     # path("changepass/",views.changepass,name="newpass")
     path('changepass/',views.changepass.as_view(),name="newpass"),
+    path('password_change/done/',views.changepassdone.as_view(), name='password_change_done'),
     path('forgetpass/',views.forgetpassword,name='forgetpass'),
     path("reset/<int:pk>", views.reset, name = "Resset"),
-    path('password_change/done/',views.changepassdone.as_view(), name='password_change_done'),
  
     
     # path('reset_password',auth_views.PasswordResetView.as_view(template_name='password_reset.html'),name='password_reset'),

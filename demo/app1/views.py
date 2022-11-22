@@ -3,6 +3,7 @@ from django.http import HttpResponse
 from django.contrib.auth.views import LoginView,PasswordChangeView,PasswordChangeDoneView,PasswordResetView,PasswordResetDoneView,PasswordResetConfirmView,PasswordResetCompleteView
 from django.contrib.auth.models import User
 from django.contrib import auth
+from django.contrib import messages
 from django.contrib.auth.hashers import make_password,check_password
 from .forms import SignUpForm,LoginForm,forgetpass,Reset
 from django import forms
@@ -34,41 +35,49 @@ def sign_up(request):
 
 def sign_in(request):
     msg=None
-    form = LoginForm(request.POST)
-   #  print(form) 
-    if request.method == 'POST':
-         if form.is_valid():
-            username = form.cleaned_data.get('username')
-            password = form.cleaned_data.get('password')
-            # print(username,password)
-            # get_user = User.objects.filter(username=username).first()
-            # print(get_user, "get_user")
-            # if get_user.check_password(password):
-            #    print("true")
-            user = auth.authenticate(username=username, password=password)
-            print(user)
-            if user is not None:
-               auth.login(request, user)
-               return redirect("home")
+    if not request.user.is_authenticated:
+        form = LoginForm(request.POST)
+    #  print(form) 
+        if request.method == 'POST':
+            if form.is_valid():
+                username = form.cleaned_data.get('username')
+                password = form.cleaned_data.get('password')
+                # print(username,password)
+                # get_user = User.objects.filter(username=username).first()
+                # print(get_user, "get_user")
+                # if get_user.check_password(password):
+                #    print("true")
+                user = auth.authenticate(username=username, password=password)
+                print(user)
+                if user is not None:
+                    auth.login(request, user)
+                    return redirect("home")
+                else:
+                    return HttpResponse("<h1>please enter valid data</h1>")
+                
             else:
-               return HttpResponse("<h1>please enter valid data</h1>")
-               
-         else:
-            msg = 'error validating form'
-           
-    return render(request, 'login.html', {'form': form, 'msg': msg})
+                msg = 'error validating form'
+            
+        return render(request, 'login.html', {'form': form, 'msg': msg})
+    else:
+        return redirect("home")
 
    
     
 def home(request):
-     return render(request,'home.html')
+    if request.user.is_authenticated:
+        return render(request,'home.html')
+    else:
+        return redirect("login")
 
-
-
+def logout(request):
+    auth.logout(request)
+    return redirect("login")
+ 
 
 class changepass(PasswordChangeView):
     template_name='changepass.html'
-   #  success_url='/logout'
+    
    
 class changepassdone(PasswordChangeDoneView):
     template_name='password_change_done.html'
@@ -124,10 +133,12 @@ def forgetpassword(request):
         
         form = forgetpass(request.POST)
         if form.is_valid():
-          email  = form.cleaned_data.get('email') 
-          if User.objects.filter(email=email).exists():
-            recent_user = User.objects.get(email = email)
+          username  = form.cleaned_data.get('username') 
+          if User.objects.filter(username=username).exists():
+            recent_user = User.objects.get(username = username)
+            print(recent_user,"$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
             id = recent_user.id
+            print(id,"****************************")
             context = {
                 "user":recent_user,
             }
@@ -145,7 +156,7 @@ def forgetpassword(request):
     
 def reset(request,pk):
     
-   
+
     if request.method == 'POST':
 
         form = Reset(request.POST)
@@ -154,8 +165,9 @@ def reset(request,pk):
             user  = User.objects.get(id = pk)
             user.set_password(new_password)
             user.save()
-
-            return HttpResponse("password has been reset")
+            messages.success(request,"password reset successfully")
+            return redirect("login")
+            
         else:
 
             form = Reset(request.POST)

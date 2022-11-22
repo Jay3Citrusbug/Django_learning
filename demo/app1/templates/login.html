@@ -20,11 +20,25 @@
      <a href="{% url 'signup' %}" class="btn btn-primary btn-lg">signup</a>
      <a href="{% url 'forgetpass' %}" class="btn btn-primary btn-lg">Forgot Password</a>
 
+
      
 
     
 
   </form>
+  {% if messages %}
+    {%for message in messages%}
+      <small {% if message.tags %} class="{{message.tags}}"  {% endif %}>{{message}}</small>
+    {% endfor %}
+  {%endif%}
+
+
+
+
+
+
+
+
 	<script src="index.js"></script>
     <!-- Optional JavaScript; choose one of the two! -->
 

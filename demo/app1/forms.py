@@ -89,26 +89,26 @@ class LoginForm(forms.Form):
     )
     
     
-class ChangepassForm(forms.Form):
+# class ChangepassForm(forms.Form):
  
         
-        password1=forms.CharField(
-            widget=forms.PasswordInput(
-                attrs={
-                    "class":"form-control"
-                }
+#         password1=forms.CharField(
+#             widget=forms.PasswordInput(
+#                 attrs={
+#                     "class":"form-control"
+#                 }
                 
-            )
-        )
+#             )
+#         )
         
-        password2=forms.CharField(
-            widget=forms.PasswordInput(
-                attrs={
-                    "class":"form-control"
-                }
+#         password2=forms.CharField(
+#             widget=forms.PasswordInput(
+#                 attrs={
+#                     "class":"form-control"
+#                 }
                 
-            )
-        )
+#             )
+#         )
 
 
 
@@ -125,7 +125,7 @@ class ChangepassForm(forms.Form):
 
 class forgetpass(forms.Form):
    
-    email = forms.EmailField()
+    username = forms.CharField()
 
 class Reset(forms.Form):
     new_password = forms.CharField(widget=forms.PasswordInput())
