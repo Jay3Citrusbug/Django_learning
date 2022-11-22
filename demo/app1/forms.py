@@ -14,6 +14,11 @@ class SignUpForm(forms.ModelForm):
     #         raise forms.ValidationError("Enter Valid Username")
     #     return username
     
+    def clean_email(self):
+        email = self.cleaned_data['email']
+        if User.objects.filter(email=email).exists():
+            raise forms.ValidationError("Email already exists")
+        return email
     def clean_cpassword(self):
             cleaned_data = super().clean()
             p = cleaned_data.get('password')
